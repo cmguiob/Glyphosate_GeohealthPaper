@@ -25,10 +25,10 @@
 #-------------------------------------------------------------------------------
 # LOAD AND CONFIRM
 #-------------------------------------------------------------------------------
+library(tidyverse)
+url <-  "https://raw.githubusercontent.com/cmguiob/Glyphosate_GeohealthPaper/main/Data/Glifo_cali.csv"
+cali <- read_csv(url)
 
-cali <- read.csv("./Datos/Glifo_cali.csv")
-
-library(dplyr)
 grouped <- group_by(cali, ID)
 summarise(grouped, mean=mean(Abs), sd=sd(Abs))
 
@@ -49,17 +49,10 @@ library(ggplot2)
 labform <- as.character(expression("y == 0.7514 + 0.2465*x"))
 labform2 <- as.character(expression("R^2 == 0.9732"))
 
-# Save as png
-png(filename="Figure 3.png", 
-    type="cairo",
-    units="in", 
-    width=2.5, 
-    height=2.5, 
-    pointsize=1, 
-    res=300)
+
 
 # Plot in device
-ggplot(cali, aes(x = Glifo, y = Abs) ) +
+p_cali <- ggplot(cali, aes(x = Glifo, y = Abs) ) +
   geom_smooth(method = "lm", lwd = 0.4, col = "#bc5090", fill = "#CDC9C9")+
   geom_errorbar(aes(ymin=Mean-Stdev, ymax=Mean+Stdev), width=.03, lwd = 0.25, col = "#8B8989")+
   geom_point(aes(x = Glifo, y = Mean ),col = "#8B8989", size = 0.35)+
@@ -74,5 +67,15 @@ ggplot(cali, aes(x = Glifo, y = Abs) ) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
   
+p_cali
 
-dev.off() # Finish saving plot
+# Save
+ggsave(filename = "Figure 3.png", 
+       plot = p_cali, 
+       device = "png", 
+       type = "cairo", 
+       dpi = 300,
+       width = 2.5,
+       heigth = 2.5,
+       units = "in",
+       path = here::here("Figures"))
